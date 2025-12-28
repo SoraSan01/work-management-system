@@ -1,0 +1,13 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  # Build an EXE explicitly
+  cmd = "go build -o tmp/main.exe cmd/server/main.go"
+  bin = "tmp/main.exe"
+
+  delay = 1000
+  exclude_dir = ["tmp", "vendor"]
+
+[log]
+  time = true

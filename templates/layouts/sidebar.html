@@ -1,0 +1,157 @@
+{{ define "sidebar" }}
+<aside 
+      class="fixed inset-y-0 left-0 w-64 bg-white text-gray-800 transform transition-transform duration-300 z-50 border-r border-gray-200"
+      :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+      x-cloak
+    >
+      <!-- Logo -->
+      <div class="flex items-center px-6 py-4 border-b border-gray-200">
+        <div class="w-10 h-10 flex items-center justify-center">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Outer Circle -->
+            <circle cx="20" cy="20" r="18" stroke="#3B82F6" stroke-width="2"/>
+            <!-- Checkmark -->
+            <path d="M12 20 L17 25 L28 14" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h1 class="text-base font-semibold text-gray-800">Work Management</h1>
+          <p class="text-xs text-gray-500">System</p>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="px-4 py-6 space-y-1 overflow-y-auto h-[calc(100vh-140px)]">
+        <!-- Dashboard -->
+        <a href="/" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
+          Dashboard
+        </a>
+
+        <!-- Task and Project Management -->
+        <div x-data="{ open: false }">
+          <button @click="open = !open" class="flex items-center justify-between w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
+            <span>Projects</span>
+            <svg :class="{'rotate-90': open}" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <div x-show="open" x-collapse class="pl-6 mt-1 space-y-1">
+            <a href="/projects" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">All Projects</a>
+            <a href="/projects/create" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Create Project</a>
+            <a href="/projects/edit" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Edit Project</a>
+            <a href="/projects/detail" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Detail Project</a>
+            <a href="/projects/board" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Board Project</a>
+
+        </div>
+        </div>
+
+        <div x-data="{ open: false }">
+          <button @click="open = !open" class="flex items-center justify-between w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
+            <span>Tasks</span>
+            <svg :class="{'rotate-90': open}" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <div x-show="open" x-collapse class="pl-6 mt-1 space-y-1">
+            <a href="/tasks" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">All Tasks</a>
+            <a href="/tasks/create" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Create Task</a>
+            <a href="/tasks/edit" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Task Edit</a>
+            <a href="/tasks/detail" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Task Detail</a>
+            <a href="/tasks/board" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Task Board</a>
+        </div>
+        </div>
+
+        <!-- Employee Management -->
+        <div x-data="{ open: false }">
+          <button @click="open = !open" class="flex items-center justify-between w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
+            <span>Employees</span>
+            <svg :class="{'rotate-90': open}" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <div x-show="open" x-collapse class="pl-6 mt-1 space-y-1">
+            <a href="/employees" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">All Employees</a>
+            <a href="/employees/create" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Add Employee</a>
+            <a href="/employees/detail" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Detail Employee</a>
+            <a href="/employees/edit" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Edit Employee</a>
+        </div>
+        </div>
+
+        <!-- Team Management -->
+        <div x-data="{ open: false }">
+          <button @click="open = !open" class="flex items-center justify-between w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
+            <span>Teams</span>
+            <svg :class="{'rotate-90': open}" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <div x-show="open" x-collapse class="pl-6 mt-1 space-y-1">
+            <a href="/teams" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Teams</a>
+            <a href="/teams/create" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Create Team</a>
+            <a href="/teams/detail" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Detail Team</a>
+            <a href="/teams/edit" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Edit Team</a>
+        </div>
+        </div>
+
+        <!-- Scheduling and Calendar -->
+        <div x-data="{ open: false }">
+          <button @click="open = !open" class="flex items-center justify-between w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
+            <span>Schedule & Calendar</span>
+            <svg :class="{'rotate-90': open}" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <div x-show="open" x-collapse class="pl-6 mt-1 space-y-1">
+            <a href="/events" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Calendar View</a>
+            <a href="/events/event-create" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Create Event</a>
+            <a href="/events/event-details" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Event Details</a>
+          </div>
+        </div>
+
+        <!-- Reporting and Analytics -->
+        <div x-data="{ open: false }">
+          <button @click="open = !open" class="flex items-center justify-between w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
+            <span>Reporting & Analytics</span>
+            <svg :class="{'rotate-90': open}" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <div x-show="open" x-collapse class="pl-6 mt-1 space-y-1">
+            <a href="/reports/tasks" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Task Reports</a>
+            <a href="/reports/projects" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Project Reports</a>
+            <a href="/reports/employees" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Employee Reports</a>
+          </div>
+        </div>
+
+        <!-- Document and Resource Management -->
+        <div x-data="{ open: false }">
+          <button @click="open = !open" class="flex items-center justify-between w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
+            <span>Documents & Resources</span>
+            <svg :class="{'rotate-90': open}" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <div x-show="open" x-collapse class="pl-6 mt-1 space-y-1">
+            <a href="/documents" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Document Library</a>
+            <a href="/documents/upload" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Upload Document</a>
+            <a href="/documents/detail" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Resources</a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- User Profile -->
+      <div class="absolute bottom-0 w-full border-t border-gray-200 px-4 py-4 bg-white">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold shadow-sm">
+              AD
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-800">Admin User</p>
+              <p class="text-xs text-gray-500">admin@wms.com</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+{{ end }}
