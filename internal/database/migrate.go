@@ -13,6 +13,8 @@ func Migrate() {
 		&models.Notification{},
 		&models.Document{},
 		&models.ActivityLog{},
+		&models.Department{},
+		&models.Role{},
 	)
 	if err != nil {
 		panic(err)

@@ -1,100 +1,48 @@
 {{ define "employees/list.html" }}
 {{ template "header" . }}
-
-<div class="space-y-6">
+<div class="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 	<!-- Page Header -->
-	<div class="flex items-center justify-between">
+	<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 		<div>
-			<h1 class="text-3xl font-bold text-gray-900">Employees</h1>
-			<p class="text-gray-600 mt-1">Manage your team members and their roles</p>
+			<h1 class="text-2xl font-semibold text-gray-900">Employees</h1>
+			<p class="mt-1 text-sm text-gray-600">Manage your team members</p>
 		</div>
-		<button class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition flex items-center space-x-2">
-			<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		<button id="open-modal" class="inline-flex items-center justify-center bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-lg transition-colors text-sm font-medium">
+			<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
 			</svg>
-			<span>Add Employee</span>
+			Add Employee
 		</button>
 	</div>
 
-	<!-- Stats Cards -->
-	<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-		<div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-			<div class="flex items-center justify-between">
-				<div>
-					<p class="text-sm text-gray-600">Total Employees</p>
-					<p class="text-2xl font-bold text-gray-900 mt-1">156</p>
-				</div>
-				<div class="bg-blue-100 p-3 rounded-lg">
-					<svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-					</svg>
-				</div>
-			</div>
-		</div>
-
-		<div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-			<div class="flex items-center justify-between">
-				<div>
-					<p class="text-sm text-gray-600">Active</p>
-					<p class="text-2xl font-bold text-gray-900 mt-1">142</p>
-				</div>
-				<div class="bg-green-100 p-3 rounded-lg">
-					<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-					</svg>
-				</div>
-			</div>
-		</div>
-
-		<div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-			<div class="flex items-center justify-between">
-				<div>
-					<p class="text-sm text-gray-600">On Leave</p>
-					<p class="text-2xl font-bold text-gray-900 mt-1">8</p>
-				</div>
-				<div class="bg-yellow-100 p-3 rounded-lg">
-					<svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-					</svg>
-				</div>
-			</div>
-		</div>
-
-		<div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-			<div class="flex items-center justify-between">
-				<div>
-					<p class="text-sm text-gray-600">New This Month</p>
-					<p class="text-2xl font-bold text-gray-900 mt-1">6</p>
-				</div>
-				<div class="bg-purple-100 p-3 rounded-lg">
-					<svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-					</svg>
-				</div>
-			</div>
-		</div>
-	</div>
-
 	<!-- Employee Table -->
-	<div class="bg-white rounded-lg shadow-sm border border-gray-200">
-		<div class="p-6 border-b border-gray-200">
-			<div class="flex items-center justify-between">
-				<h2 class="text-lg font-semibold text-gray-900">All Employees</h2>
-				<div class="flex items-center space-x-3">
-					<input 
-						type="text" 
-						placeholder="Search employees..." 
-						class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-					<select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-						<option>All Departments</option>
-						<option>Engineering</option>
-						<option>Marketing</option>
-						<option>Sales</option>
+	<div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+		<!-- Filter Header -->
+		<div class="p-4 border-b border-gray-200">
+			<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+				<h2 class="text-sm font-medium text-gray-900">All Employees</h2>
+				<div class="flex flex-col sm:flex-row gap-2">
+					<div class="relative">
+						<input 
+							type="text" 
+							id="search-input"
+							placeholder="Search..." 
+							class="w-full sm:w-56 pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all">
+						<svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+						</svg>
+					</div>
+					<select id="department-filter" class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all bg-white">
+						<option value="">All Departments</option>
+						{{ range .departments }}
+							<option value="{{ .ID }}">{{ .Name }}</option>
+						{{ end }}
 					</select>
 				</div>
 			</div>
 		</div>
 
+		<!-- Table -->
 		<div class="overflow-x-auto">
 			<table class="w-full">
 				<thead class="bg-gray-50 border-b border-gray-200">
@@ -103,58 +51,284 @@
 						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
 						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
 						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+						<th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
 					</tr>
 				</thead>
-				<tbody class="bg-white divide-y divide-gray-200">
-					<!-- Sample Row - Replace with your data -->
-					<tr class="hover:bg-gray-50">
+				<tbody class="bg-white divide-y divide-gray-100">
+					{{ range .users }}
+					<tr class="hover:bg-gray-50 transition-colors" 
+						data-id="{{ .ID }}" 
+						data-first-name="{{ .FirstName }}"
+						data-last-name="{{ .LastName }}"
+						data-email="{{ .Email }}"
+						data-department-id="{{ .Department.ID }}"
+						data-role-id="{{ .Role.ID }}"
+						data-is-active="{{ .IsActive }}">
 						<td class="px-6 py-4 whitespace-nowrap">
 							<div class="flex items-center">
-								<div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
-									JD
+								<div class="w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center text-white text-sm font-medium">
+									{{ printf "%.1s%.1s" .FirstName .LastName }}
 								</div>
-								<div class="ml-4">
-									<div class="text-sm font-medium text-gray-900">John Doe</div>
-									<div class="text-sm text-gray-500">john.doe@company.com</div>
+								<div class="ml-3">
+									<div class="text-sm font-medium text-gray-900">{{ .FirstName }} {{ .LastName }}</div>
+									<div class="text-sm text-gray-500">{{ .Email }}</div>
 								</div>
 							</div>
 						</td>
 						<td class="px-6 py-4 whitespace-nowrap">
-							<div class="text-sm text-gray-900">Engineering</div>
+							<div class="text-sm text-gray-900">{{ .Department.Name }}</div>
 						</td>
 						<td class="px-6 py-4 whitespace-nowrap">
-							<div class="text-sm text-gray-900">Senior Developer</div>
+							<div class="text-sm text-gray-600">{{ .Role.Name }}</div>
 						</td>
 						<td class="px-6 py-4 whitespace-nowrap">
-							<span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+							{{ if .IsActive }}
+							<span class="px-2.5 py-1 inline-flex text-xs font-medium rounded-md bg-green-50 text-green-700 border border-green-200">
 								Active
 							</span>
+							{{ else }}
+							<span class="px-2.5 py-1 inline-flex text-xs font-medium rounded-md bg-gray-50 text-gray-600 border border-gray-200">
+								Inactive
+							</span>
+							{{ end }}
 						</td>
-						<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-							<button class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-							<button class="text-red-600 hover:text-red-900">Delete</button>
+						<td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+							<button class="edit-btn text-gray-700 hover:text-gray-900 mr-3 transition-colors font-medium">
+								Edit
+							</button>
+							<button class="delete-btn text-red-600 hover:text-red-700 transition-colors font-medium" 
+									data-id="{{ .ID }}" 
+									data-name="{{ .FirstName }} {{ .LastName }}">
+								Delete
+							</button>
 						</td>
 					</tr>
+					{{ else }}
+					<tr>
+						<td colspan="5" class="text-center py-12">
+							<svg class="mx-auto h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+							</svg>
+							<p class="mt-2 text-sm text-gray-500">No employees found</p>
+						</td>
+					</tr>
+					{{ end }}
 				</tbody>
 			</table>
 		</div>
 
 		<!-- Pagination -->
-		<div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-			<p class="text-sm text-gray-700">
-				Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">156</span> results
+		<div class="px-6 py-3 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+			{{ if .total }}
+			<p class="text-sm text-gray-600">
+				Showing
+				<span class="font-medium text-gray-900">{{ .start }}</span>
+				to
+				<span class="font-medium text-gray-900">{{ .end }}</span>
+				of
+				<span class="font-medium text-gray-900">{{ .total }}</span>
+				results
 			</p>
-			<div class="flex space-x-2">
-				<button class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Previous</button>
-				<button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">1</button>
-				<button class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">2</button>
-				<button class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">3</button>
-				<button class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Next</button>
+			{{ end }}
+
+			<div class="flex space-x-1">
+				{{ if .hasPrev }}
+					<a href="?page={{ .prevPage }}"
+					class="px-3 py-1.5 border border-gray-300 rounded-md text-sm hover:bg-gray-50 text-gray-700">
+						Previous
+					</a>
+				{{ else }}
+					<span class="px-3 py-1.5 border border-gray-200 rounded-md text-sm text-gray-400">
+						Previous
+					</span>
+				{{ end }}
+
+				{{ range .pages }}
+					<a href="?page={{ . }}"
+					class="px-3 py-1.5 rounded-md text-sm
+					{{ if eq $.currentPage . }}
+							bg-gray-900 text-white
+					{{ else }}
+							border border-gray-300 text-gray-700 hover:bg-gray-50
+					{{ end }}">
+						{{ . }}
+					</a>
+				{{ end }}
+
+				{{ if .hasNext }}
+					<a href="?page={{ .nextPage }}"
+					class="px-3 py-1.5 border border-gray-300 rounded-md text-sm hover:bg-gray-50 text-gray-700">
+						Next
+					</a>
+				{{ else }}
+					<span class="px-3 py-1.5 border border-gray-200 rounded-md text-sm text-gray-400">
+						Next
+					</span>
+				{{ end }}
 			</div>
 		</div>
 	</div>
 </div>
 
+<!-- Employee Modal -->
+<div id="employee-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden p-4">
+	<div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+		<!-- Modal Header - Fixed -->
+		<div class="bg-gray-900 px-6 py-4 flex-shrink-0">
+			<h2 id="modal-title" class="text-lg font-semibold text-white">Create New Employee</h2>
+			<p class="text-gray-400 text-sm mt-0.5">Fill in the details below</p>
+		</div>
+
+		<!-- Modal Form - Scrollable -->
+		<div class="overflow-y-auto flex-1">
+			<form id="employee-form" action="/employees" method="POST" class="px-6 py-6 space-y-5">
+				<input type="hidden" name="id" id="employee-id">
+				
+				<!-- Name Fields -->
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div>
+						<label for="first-name" class="block text-sm font-medium text-gray-700 mb-1.5">First Name</label>
+						<input type="text" 
+							   name="first_name" 
+							   id="first-name"
+							   placeholder="Enter first name" 
+							   required 
+							   class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all">
+					</div>
+					<div>
+						<label for="last-name" class="block text-sm font-medium text-gray-700 mb-1.5">Last Name</label>
+						<input type="text" 
+							   name="last_name" 
+							   id="last-name"
+							   placeholder="Enter last name" 
+							   required 
+							   class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all">
+					</div>
+				</div>
+				
+				<!-- Email Field -->
+				<div>
+					<label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+					<input type="email" 
+						   name="email" 
+						   id="email"
+						   placeholder="employee@example.com" 
+						   required 
+						   class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all">
+				</div>
+				
+				<!-- Password Field -->
+				<div>
+					<label for="password" class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+					<input type="password" 
+						   name="password" 
+						   id="password"
+						   placeholder="Enter password" 
+						   class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all">
+					<p class="mt-1.5 text-xs text-gray-500" id="password-hint">
+						Required for new employees, leave blank to keep current password
+					</p>
+				</div>
+
+				<!-- Role and Department -->
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div>
+						<label for="role-id" class="block text-sm font-medium text-gray-700 mb-1.5">Role</label>
+						<select name="role_id" 
+								id="role-id"
+								required 
+								class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all bg-white">
+							<option value="">Select Role</option>
+							{{ range .roles }}
+								<option value="{{ .ID }}">{{ .Name }}</option>
+							{{ end }}
+						</select>
+					</div>
+
+					<div>
+						<label for="department-id" class="block text-sm font-medium text-gray-700 mb-1.5">Department</label>
+						<select name="department_id" 
+								id="department-id"
+								required 
+								class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all bg-white">
+							<option value="">Select Department</option>
+							{{ range .departments }}
+								<option value="{{ .ID }}">{{ .Name }}</option>
+							{{ end }}
+						</select>
+					</div>
+				</div>
+
+				<!-- Status Field -->
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+					<div class="flex items-center space-x-6">
+						<label class="flex items-center cursor-pointer">
+							<input type="radio" 
+								   name="is_active" 
+								   id="status-active"
+								   value="true" 
+								   checked
+								   class="w-4 h-4 text-gray-900 border-gray-300 focus:ring-gray-900">
+							<span class="ml-2 text-sm text-gray-700">
+								Active
+							</span>
+						</label>
+						<label class="flex items-center cursor-pointer">
+							<input type="radio" 
+								   name="is_active" 
+								   id="status-inactive"
+								   value="false"
+								   class="w-4 h-4 text-gray-900 border-gray-300 focus:ring-gray-900">
+							<span class="ml-2 text-sm text-gray-700">
+								Inactive
+							</span>
+						</label>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<!-- Action Buttons - Fixed -->
+		<div class="flex justify-end gap-2 px-6 py-4 border-t border-gray-200 flex-shrink-0 bg-gray-50">
+			<button type="button" 
+					id="close-modal" 
+					class="px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-colors text-sm font-medium">
+				Cancel
+			</button>
+			<button type="submit" 
+					id="submit-btn"
+					form="employee-form"
+					class="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors text-sm font-medium">
+				Create Employee
+			</button>
+		</div>
+	</div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden p-4">
+	<div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+		<div class="flex items-center justify-center w-12 h-12 mx-auto bg-red-50 rounded-full mb-4">
+			<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+			</svg>
+		</div>
+		<h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">Confirm Delete</h3>
+		<p class="text-sm text-gray-600 mb-6 text-center">
+			Are you sure you want to delete <span id="delete-employee-name" class="font-semibold text-gray-900"></span>? This action cannot be undone.
+		</p>
+		<div class="flex gap-2">
+			<button id="cancel-delete" class="flex-1 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-colors text-sm font-medium">
+				Cancel
+			</button>
+			<button id="confirm-delete" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-medium">
+				Delete
+			</button>
+		</div>
+	</div>
+</div>
+
 {{ template "footer" . }}
+<script src="/static/js/employees.js"></script>
 {{ end }}

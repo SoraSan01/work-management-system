@@ -41,8 +41,34 @@
             <a href="/projects/edit" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Edit Project</a>
             <a href="/projects/detail" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Detail Project</a>
             <a href="/projects/board" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Board Project</a>
-
+          </div>
         </div>
+
+        <!-- Department Management -->
+        <div x-data="{ open: false }">
+          <button @click="open = !open" class="flex items-center justify-between w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
+            <span>Department</span>
+            <svg :class="{'rotate-90': open}" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <div x-show="open" x-collapse class="pl-6 mt-1 space-y-1">
+            <a href="/departments" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">All Departments</a>
+            <a href="/departments/create" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Create Department</a>
+          </div>
+        </div>
+
+        <!-- Role Management -->
+        <div x-data="{ open: false }">
+          <button @click="open = !open" class="flex items-center justify-between w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
+            <span>Role</span>
+            <svg :class="{'rotate-90': open}" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <div x-show="open" x-collapse class="pl-6 mt-1 space-y-1">
+            <a href="/roles" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">All Roles</a>
+          </div>
         </div>
 
         <div x-data="{ open: false }">
@@ -71,10 +97,7 @@
           </button>
           <div x-show="open" x-collapse class="pl-6 mt-1 space-y-1">
             <a href="/employees" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">All Employees</a>
-            <a href="/employees/create" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Add Employee</a>
-            <a href="/employees/detail" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Detail Employee</a>
-            <a href="/employees/edit" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition">Edit Employee</a>
-        </div>
+          </div>
         </div>
 
         <!-- Team Management -->

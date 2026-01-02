@@ -1,10 +1,27 @@
 package main
 
 import (
+	"log"
+
+	"workms/internal/database"
 	"workms/internal/server"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	r := server.NewServer() // create server
-	r.Run(":8080")          // start server on port 8080
+	// 1. Load environment variables
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	// 2. Connect to PostgreSQL
+	database.Connect()
+	// database.Migrate() // optional but recommended
+
+	// 3. Create and start Gin server
+	r := server.NewServer()
+	if err := r.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }

@@ -4,7 +4,9 @@ package routes
 import (
 	"net/http"
 	"workms/internal/controllers"
+	"workms/internal/database"
 	"workms/internal/middleware"
+	"workms/internal/repositories"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,6 +16,16 @@ func SetupRoutes(r *gin.Engine) {
 		ctx.HTML(http.StatusNotFound, "errors/error.html", gin.H{})
 	})
 
+	// INITIALIZE REPO
+	userRepo := repositories.NewUserRepository(database.DB)
+	depRepo := repositories.NewDepartmentRepository(database.DB)
+	roleRepo := repositories.NewRoleRepository(database.DB)
+
+	// INITIALIZE CONTROLLER
+	employeeController := controllers.NewUserController(userRepo)
+	departmentController := controllers.NewDepartmentRepository(depRepo)
+	roleController := controllers.NewRoleRepository(roleRepo)
+
 	// Apply global middleware (example: simple auth)
 	r.Use(middleware.Logger())
 
@@ -22,10 +34,10 @@ func SetupRoutes(r *gin.Engine) {
 
 	emp := r.Group("/employees")
 	{
-		emp.GET("/", controllers.ListEmployees)
-		emp.GET("/create", controllers.CreateEmployeeForm)
-		emp.GET("/edit", controllers.EditEmployeeForm)
-		emp.GET("/detail", controllers.DetailEmployee)
+		emp.GET("/", employeeController.ListEmployees)
+		emp.POST("/", employeeController.Store)
+		emp.POST("/:id", employeeController.Update)
+		emp.POST("/:id/delete", employeeController.Delete)
 	}
 
 	proj := r.Group("/projects")
@@ -65,5 +77,21 @@ func SetupRoutes(r *gin.Engine) {
 		reports.GET("/tasks", controllers.ReportTask)
 		reports.GET("/employees", controllers.ReportEmployee)
 		reports.GET("/projects", controllers.ReportProject)
+	}
+
+	dep := r.Group("/departments")
+	{
+		dep.GET("/", departmentController.ListDepartments)
+		dep.POST("/", departmentController.Store)
+		dep.POST("/:id", departmentController.Update)
+		dep.POST("/:id/delete", departmentController.Delete)
+	}
+
+	roles := r.Group("/roles")
+	{
+		roles.GET("/", roleController.ListRoles)
+		roles.POST("/", roleController.Store)
+		roles.POST("/:id", roleController.Update)
+		roles.POST("/:id/delete", roleController.Delete)
 	}
 }

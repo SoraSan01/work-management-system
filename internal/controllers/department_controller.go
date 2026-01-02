@@ -1,0 +1,129 @@
+package controllers
+
+import (
+	"math"
+	"net/http"
+	"strconv"
+	"workms/internal/models"
+	"workms/internal/repositories"
+
+	"github.com/gin-gonic/gin"
+)
+
+type DepartmentController struct {
+	Repo *repositories.DepartmentRepository
+}
+
+func NewDepartmentRepository(repo *repositories.DepartmentRepository) *DepartmentController {
+	return &DepartmentController{Repo: repo}
+}
+
+// READ ALL DATA
+func (dc *DepartmentController) ListDepartments(c *gin.Context) {
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+
+	pageSize := 10
+
+	departments, total, err := dc.Repo.FindPaginated(page, pageSize)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Calculate total pages
+	totalPages := int(math.Ceil(float64(total) / float64(pageSize)))
+	if totalPages == 0 {
+		totalPages = 1 // ensure at least 1 page to avoid template issues
+	}
+
+	// Calculate start and end for display
+	var start, end int
+	if total == 0 {
+		start = 0
+		end = 0
+	} else {
+		start = (page-1)*pageSize + 1
+		end = page * pageSize
+		if end > int(total) {
+			end = int(total)
+		}
+	}
+
+	// Build page numbers slice
+	pages := make([]int, totalPages)
+	for i := 0; i < totalPages; i++ {
+		pages[i] = i + 1
+	}
+
+	c.HTML(http.StatusOK, "departments/list.html", gin.H{
+		"title":       "Departments",
+		"departments": departments,
+
+		// pagination
+		"currentPage": page,
+		"totalPages":  totalPages,
+		"total":       total,
+		"start":       start,
+		"end":         end,
+		"pages":       pages,
+
+		"hasPrev":  page > 1,
+		"hasNext":  page < totalPages,
+		"prevPage": page - 1,
+		"nextPage": page + 1,
+	})
+}
+
+// INSERT DATA
+func (dc *DepartmentController) Store(c *gin.Context) {
+	dep := models.Department{
+		Name:     c.PostForm("name"),
+		IsActive: c.PostForm("is_active") == "true",
+	}
+
+	if err := dc.Repo.Create(&dep); err != nil {
+		c.HTML(http.StatusBadRequest, "errors/error.html", gin.H{
+			"Message": "Failed to department Role: " + err.Error(),
+		})
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/departments")
+}
+
+func (dc *DepartmentController) Update(c *gin.Context) {
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+
+	// Fetch Role
+	dep, err := dc.Repo.FindByID(id)
+	if err != nil {
+		c.HTML(http.StatusNotFound, "errors/error.html", gin.H{
+			"Message": "Department not found",
+		})
+		return
+	}
+
+	dep.Name = c.PostForm("name")
+	dep.IsActive = c.PostForm("is_active") == "true"
+
+	// Save
+	if err := dc.Repo.Update(dep); err != nil {
+		c.HTML(http.StatusInternalServerError, "errors/error.html", gin.H{
+			"Message": "Failed to update Department: " + err.Error(),
+		})
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/departments")
+}
+
+// DELETE DATA
+func (dc *DepartmentController) Delete(c *gin.Context) {
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	dc.Repo.Delete(id)
+	c.Redirect(http.StatusFound, "/departments")
+}
