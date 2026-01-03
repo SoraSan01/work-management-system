@@ -1,0 +1,155 @@
+{{ define "teams/list.html" }}
+{{ template "header" . }}
+
+<div class="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+	<!-- Page Header -->
+	<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+		<div>
+			<h1 class="text-2xl font-semibold text-gray-900">Teams</h1>
+			<p class="mt-1 text-sm text-gray-600">Manage your teams</p>
+		</div>
+
+		<button id="open-team-modal"
+			class="inline-flex items-center justify-center bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-lg transition-colors text-sm font-medium">
+			<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+					d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+			</svg>
+			Add Team
+		</button>
+	</div>
+
+	<!-- Teams Table Card -->
+	<div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+
+		<!-- Filter Header -->
+		<div class="p-4 border-b border-gray-200">
+			<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+				<h2 class="text-sm font-medium text-gray-900">All Teams</h2>
+
+				<div class="relative">
+					<input type="text" id="search-input"
+						placeholder="Search teams..."
+						class="w-full sm:w-56 pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg
+							   focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none">
+					<svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"
+						fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+							d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+					</svg>
+				</div>
+			</div>
+		</div>
+
+		<!-- Table -->
+		<div class="overflow-x-auto">
+			<table class="w-full">
+				<thead class="bg-gray-50 border-b border-gray-200">
+					<tr>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Team</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+						<th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+					</tr>
+				</thead>
+
+				<tbody class="bg-white divide-y divide-gray-100">
+					{{ range .teams }}
+					<tr class="hover:bg-gray-50 transition-colors"
+						data-id="{{ .ID }}"
+						data-name="{{ .Name }}"
+						data-description="{{ .Description }}">
+
+						<td class="px-6 py-4 text-sm font-medium text-gray-900">
+							{{ .Name }}
+						</td>
+
+						<td class="px-6 py-4 text-sm text-gray-600 truncate max-w-md">
+							{{ .Description }}
+						</td>
+
+						<td class="px-6 py-4 text-sm text-gray-600">
+							{{ .CreatedAt.Format "Jan 02, 2006" }}
+						</td>
+
+						<td class="px-6 py-4 text-right text-sm">
+							<button class="edit-team-btn text-gray-700 hover:text-gray-900 mr-3 font-medium">
+								Edit
+							</button>
+							<button class="delete-team-btn text-red-600 hover:text-red-700 font-medium"
+								data-id="{{ .ID }}"
+								data-name="{{ .Name }}">
+								Delete
+							</button>
+						</td>
+					</tr>
+					{{ else }}
+					<tr>
+						<td colspan="4" class="text-center py-12 text-sm text-gray-500">
+							No teams found
+						</td>
+					</tr>
+					{{ end }}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- Team Modal -->
+<div id="team-modal"
+	class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden p-4">
+	<div class="bg-white rounded-lg shadow-xl w-full max-w-xl">
+
+		<div class="bg-gray-900 px-6 py-4">
+			<h2 id="team-modal-title" class="text-lg font-semibold text-white">
+				Create Team
+			</h2>
+		</div>
+
+		<form id="team-form" action="/teams" method="POST" class="px-6 py-6 space-y-4">
+			<input type="hidden" name="id" id="team-id">
+
+			<input name="name" id="team-name" placeholder="Team name"
+				class="w-full px-3 py-2 border rounded-lg" required>
+
+			<textarea name="description" id="team-description" rows="3"
+				placeholder="Team description"
+				class="w-full px-3 py-2 border rounded-lg"></textarea>
+		</form>
+
+		<div class="flex justify-end gap-2 px-6 py-4 border-t bg-gray-50">
+			<button id="close-team-modal" class="px-4 py-2 border rounded-lg">
+				Cancel
+			</button>
+			<button type="submit" form="team-form"
+				class="px-4 py-2 bg-gray-900 text-white rounded-lg">
+				Save Team
+			</button>
+		</div>
+	</div>
+</div>
+
+<!-- Delete Modal -->
+<div id="delete-team-modal"
+	class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+	<div class="bg-white rounded-lg p-6 max-w-md w-full">
+		<p class="text-center mb-4">
+			Delete <span id="delete-team-name" class="font-semibold"></span>?
+		</p>
+		<div class="flex gap-2">
+			<button id="cancel-team-delete" class="flex-1 border px-4 py-2 rounded-lg">
+				Cancel
+			</button>
+			<button id="confirm-team-delete"
+				class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg">
+				Delete
+			</button>
+		</div>
+	</div>
+</div>
+
+{{ template "footer" . }}
+<script src="/static/js/teams.js"></script>
+{{ end }}

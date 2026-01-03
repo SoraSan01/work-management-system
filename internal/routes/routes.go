@@ -20,11 +20,17 @@ func SetupRoutes(r *gin.Engine) {
 	userRepo := repositories.NewUserRepository(database.DB)
 	depRepo := repositories.NewDepartmentRepository(database.DB)
 	roleRepo := repositories.NewRoleRepository(database.DB)
+	projRepo := repositories.NewProjectRepository(database.DB)
+	taskRepo := repositories.NewTaskRepository(database.DB)
+	teamRepo := repositories.NewTeamRepository(database.DB)
 
 	// INITIALIZE CONTROLLER
 	employeeController := controllers.NewUserController(userRepo)
 	departmentController := controllers.NewDepartmentRepository(depRepo)
 	roleController := controllers.NewRoleRepository(roleRepo)
+	projController := controllers.NewProjectController(projRepo)
+	taskController := controllers.NewTaskController(taskRepo)
+	teamController := controllers.NewTeamController(teamRepo)
 
 	// Apply global middleware (example: simple auth)
 	r.Use(middleware.Logger())
@@ -42,20 +48,18 @@ func SetupRoutes(r *gin.Engine) {
 
 	proj := r.Group("/projects")
 	{
-		proj.GET("/", controllers.ListProjects)
-		proj.GET("/create", controllers.CreateProjectForm)
-		proj.GET("/edit", controllers.EditProjectForm)
-		proj.GET("/detail", controllers.DetailProject)
-		proj.GET("/board", controllers.BoardProject)
+		proj.GET("/", projController.ListProjects)
+		proj.POST("/", projController.Store)
+		proj.POST("/:id", projController.Update)
+		proj.POST("/:id/delete", projController.Delete)
 	}
 
 	task := r.Group("/tasks")
 	{
-		task.GET("/", controllers.ListTask)
-		task.GET("/create", controllers.CreateTaskForm)
-		task.GET("/edit", controllers.EditTaskForm)
-		task.GET("/detail", controllers.DetailTask)
-		task.GET("/board", controllers.BoardTask)
+		task.GET("/", taskController.ListTasks)
+		task.POST("/", taskController.Store)
+		task.POST("/:id", taskController.Update)
+		task.POST("/:id/delete", taskController.Delete)
 	}
 
 	event := r.Group("/calendar")
@@ -93,5 +97,13 @@ func SetupRoutes(r *gin.Engine) {
 		roles.POST("/", roleController.Store)
 		roles.POST("/:id", roleController.Update)
 		roles.POST("/:id/delete", roleController.Delete)
+	}
+
+	teams := r.Group("/teams")
+	{
+		teams.GET("/", teamController.ListTeams)
+		teams.POST("/", teamController.Store)
+		teams.POST("/:id", teamController.Update)
+		teams.POST("/:id/delete", teamController.Delete)
 	}
 }

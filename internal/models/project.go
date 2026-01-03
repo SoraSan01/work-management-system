@@ -7,9 +7,15 @@ type Project struct {
 	Name        string
 	Description string
 	Status      string // planned, active, completed
-	StartDate   time.Time
-	EndDate     time.Time
-	TeamID      uint64
-	CreatedBy   uint64
-	CreatedAt   time.Time
+
+	StartDate time.Time
+	EndDate   time.Time
+
+	TeamID *uint64
+	Team   *Team `gorm:"foreignKey:TeamID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+
+	CreatedBy *uint64
+	User      *User `gorm:"foreignKey:CreatedBy;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+
+	CreatedAt time.Time
 }

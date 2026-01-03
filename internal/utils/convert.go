@@ -25,3 +25,11 @@ func Uint64OrZero(value string) uint64 {
 	}
 	return id
 }
+
+func parseUint(value string) uint64 {
+	if value == "" {
+		return 0
+	}
+	id, _ := strconv.ParseUint(value, 10, 64)
+	return id
+}
