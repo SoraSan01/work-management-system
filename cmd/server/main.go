@@ -17,7 +17,7 @@ func main() {
 
 	// 2. Connect to PostgreSQL
 	database.Connect()
-	// database.Migrate() // optional but recommended
+	database.Migrate() // optional but recommended
 
 	// 3. Create and start Gin server
 	r := server.NewServer()

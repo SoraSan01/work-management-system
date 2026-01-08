@@ -12,6 +12,7 @@ const projectIdInput = document.getElementById('project-id');
 const projectNameInput = document.getElementById('project-name');
 const projectDescriptionInput = document.getElementById('project-description');
 const projectStatusInput = document.getElementById('project-status');
+const projectTeamInput = document.getElementById('project-team');
 const projectStartDateInput = document.getElementById('project-start');
 const projectEndDateInput = document.getElementById('project-end');
 
@@ -66,13 +67,10 @@ document.querySelectorAll('.edit-project-btn').forEach(btn => {
 		projectIdInput.value = row.dataset.id || '';
 		projectNameInput.value = row.dataset.name || '';
 		projectStatusInput.value = row.dataset.status || '';
-		projectDescriptionInput.value =
-			row.dataset.description || '';
-
-		projectStartDateInput.value =
-			row.dataset.startDate || '';
-		projectEndDateInput.value =
-			row.dataset.endDate || '';
+		projectDescriptionInput.value = row.dataset.description || '';
+		projectStartDateInput.value = row.dataset.startDate || '';
+		projectEndDateInput.value = row.dataset.endDate || '';
+		projectTeamInput.value = row.dataset.teamId || '';
 
 		modalTitle.textContent = 'Edit Project';
 		submitBtn.textContent = 'Update Project';
@@ -124,6 +122,7 @@ confirmDeleteBtn?.addEventListener('click', () => {
 function resetForm() {
 	projectForm.reset();
 	projectIdInput.value = '';
+	projectTeamInput.value = '';
 }
 
 // Escape key closes modals

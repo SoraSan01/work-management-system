@@ -68,13 +68,15 @@
 
 				<tbody class="bg-white divide-y divide-gray-100">
 					{{ range .projects }}
-					<tr class="hover:bg-gray-50 transition-colors"
+					<tr
 						data-id="{{ .ID }}"
 						data-name="{{ .Name }}"
 						data-status="{{ .Status }}"
 						data-description="{{ .Description }}"
 						data-start-date="{{ .StartDate.Format "2006-01-02" }}"
-						data-end-date="{{ .EndDate.Format "2006-01-02" }}">
+						data-end-date="{{ .EndDate.Format "2006-01-02" }}"
+						data-team-id="{{ if .TeamID }}{{ .TeamID }}{{ end }}"
+					>
 						<td class="px-6 py-4">
 							<div>
 								<div class="text-sm font-medium text-gray-900">{{ .Name }}</div>
@@ -227,6 +229,20 @@
 							<option value="planned">Planned</option>
 							<option value="active">Active</option>
 							<option value="completed">Completed</option>
+						</select>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-700 mb-1.5">
+							Assigned Team
+						</label>
+						<select name="team_id" id="project-team"
+							class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white
+								focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none">
+							<option value="">No Team</option>
+							{{ range .teams }}
+								<option value="{{ .ID }}">{{ .Name }}</option>
+							{{ end }}
 						</select>
 					</div>
 

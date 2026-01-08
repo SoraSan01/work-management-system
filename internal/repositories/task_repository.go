@@ -57,10 +57,39 @@ func (r *TaskRepository) FindPaginated(page, pageSize int) (tasks []models.Task,
 	}
 
 	err = r.DB.
+		Preload("Project").
+		Preload("User").
 		Limit(pageSize).
 		Offset(offset).
 		Order("id asc").
 		Find(&tasks).Error
 
+	return
+}
+
+// FindAllWithRelations fetches all tasks with their related Project and User
+func (r *TaskRepository) FindAllWithRelations() ([]models.Task, error) {
+	var tasks []models.Task
+	err := r.DB.
+		Preload("Project").
+		Preload("Project.Team").
+		Preload("User").
+		Find(&tasks).Error
+	return tasks, err
+}
+
+// GetTaskStatistics returns task count by status
+func (r *TaskRepository) GetTaskStatistics() (total, inProgress, completed int64, err error) {
+	err = r.DB.Model(&models.Task{}).Count(&total).Error
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Model(&models.Task{}).Where("status = ?", "in_progress").Count(&inProgress).Error
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Model(&models.Task{}).Where("status = ?", "done").Count(&completed).Error
 	return
 }

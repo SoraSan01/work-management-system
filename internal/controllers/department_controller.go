@@ -14,7 +14,7 @@ type DepartmentController struct {
 	Repo *repositories.DepartmentRepository
 }
 
-func NewDepartmentRepository(repo *repositories.DepartmentRepository) *DepartmentController {
+func NewDepartmentController(repo *repositories.DepartmentRepository) *DepartmentController {
 	return &DepartmentController{Repo: repo}
 }
 

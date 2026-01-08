@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"errors"
 	"workms/internal/database"
 	"workms/internal/models"
 
@@ -86,4 +87,36 @@ func (r *UserRepository) FindPaginated(page, pageSize int) (users []models.User,
 		Find(&users).Error
 
 	return
+}
+
+// GetAssignableUsers returns users that can be assigned to tasks
+func (ur *UserRepository) GetAssignableUsers() ([]models.User, error) {
+	var users []models.User
+
+	err := ur.DB.
+		Where("is_active = ?", true).
+		Order("first_name ASC").
+		Find(&users).Error
+
+	return users, err
+}
+
+func (r *UserRepository) GetUsersByProject(projectID uint64) ([]models.User, error) {
+	var users []models.User
+	err := r.DB.
+		Joins("JOIN project_users ON project_users.user_id = users.id").
+		Where("project_users.project_id = ?", projectID).
+		Find(&users).Error
+	return users, err
+}
+
+func (ur *UserRepository) GetByID(id uint64) (*models.User, error) {
+	var user models.User
+	if err := ur.DB.First(&user, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
 }

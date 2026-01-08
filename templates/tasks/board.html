@@ -1,9 +1,300 @@
 {{ define "task/board.html" }}
 {{ template "header" . }}
 
-<section class="container mx-auto p-6">
-	<h2 class="text-2xl font-bold">task board</h2>
+<section class="container mx-auto p-6 space-y-6">
+    <!-- Header -->
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Task Management Dashboard</h1>
+        <p class="text-gray-500 mt-1">Monitor and manage your tasks and projects</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <!-- Total Tasks -->
+        <div class="bg-white rounded-xl shadow p-5 border border-gray-100 flex flex-col justify-between">
+            <div class="flex items-center justify-between text-gray-500">
+                <span class="text-sm font-medium">Total Tasks</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+            </div>
+            <div class="mt-3 text-2xl font-bold text-gray-900">{{ .stats.totalTasks }}</div>
+            <div class="mt-1 text-xs text-gray-400">{{ .stats.completionRate }}% completion rate</div>
+        </div>
+
+        <!-- In Progress -->
+        <div class="bg-white rounded-xl shadow p-5 border border-gray-100 flex flex-col justify-between">
+            <div class="flex items-center justify-between text-gray-500">
+                <span class="text-sm font-medium">In Progress</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <div class="mt-3 text-2xl font-bold text-gray-900">{{ .stats.inProgress }}</div>
+            <div class="mt-1 text-xs text-gray-400">{{ .stats.inProgress }} pending tasks</div>
+        </div>
+
+        <!-- Completed -->
+        <div class="bg-white rounded-xl shadow p-5 border border-gray-100 flex flex-col justify-between">
+            <div class="flex items-center justify-between text-gray-500">
+                <span class="text-sm font-medium">Completed</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <div class="mt-3 text-2xl font-bold text-gray-900">{{ .stats.completed }}</div>
+            <div class="mt-1 text-xs text-gray-400">Tasks finished</div>
+        </div>
+
+        <!-- Active Projects -->
+        <div class="bg-white rounded-xl shadow p-5 border border-gray-100 flex flex-col justify-between">
+            <div class="flex items-center justify-between text-gray-500">
+                <span class="text-sm font-medium">Active Projects</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                </svg>
+            </div>
+            <div class="mt-3 text-2xl font-bold text-gray-900">{{ .stats.activeProjects }}</div>
+            <div class="mt-1 text-xs text-gray-400">{{ .stats.totalProjects }} total</div>
+        </div>
+
+        <!-- Team Members -->
+        <div class="bg-white rounded-xl shadow p-5 border border-gray-100 flex flex-col justify-between">
+            <div class="flex items-center justify-between text-gray-500">
+                <span class="text-sm font-medium">Team Members</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+            </div>
+            <div class="mt-3 text-2xl font-bold text-gray-900">{{ .stats.teamMembers }}</div>
+            <div class="mt-1 text-xs text-gray-400">{{ .stats.teams }} teams</div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="bg-gray-100 rounded-lg p-1 flex space-x-1">
+        <button id="tasksTab" class="flex-1 text-sm font-medium rounded-md py-2 hover:bg-white/50 text-gray-700">Tasks</button>
+        <button id="projectsTab" class="flex-1 text-sm font-medium rounded-md py-2 hover:bg-white/50 text-gray-700">Projects</button>
+        <button id="teamsTab" class="flex-1 text-sm font-medium rounded-md py-2 hover:bg-white/50 text-gray-700">Teams</button>
+    </div>
+
+    <!-- Tab Contents -->
+    <div id="tab-contents" class="space-y-6 mt-6">
+        <!-- Tasks -->
+        <div id="tasksContent" class="tab-content">
+            <div class="space-y-4">
+
+                {{ range .tasks }}
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition group">
+
+                    <div class="p-5 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+
+                        <!-- Left Content -->
+                        <div class="flex-1 space-y-2">
+                            <h4 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition">
+                                {{ .Title }}
+                            </h4>
+
+                            {{ if .Description }}
+                            <p class="text-sm text-gray-500 line-clamp-2">
+                                {{ .Description }}
+                            </p>
+                            {{ end }}
+
+                            <!-- Meta Info -->
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-400 mt-2">
+
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    {{ .ProjectName }}
+                                </span>
+
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    {{ .AssignedTo }}
+                                </span>
+
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    Due {{ .DueDate }}
+                                </span>
+
+                            </div>
+                        </div>
+
+                        <!-- Right Badges -->
+                        <div class="flex flex-row sm:flex-col gap-2 text-xs font-medium">
+
+                            <!-- Status -->
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full
+                                {{ if eq .Status "todo" }}bg-gray-100 text-gray-700
+                                {{ else if eq .Status "in_progress" }}bg-blue-100 text-blue-700
+                                {{ else if eq .Status "completed" }}bg-green-100 text-green-700
+                                {{ end }}">
+                                {{ if eq .Status "todo" }}To Do
+                                {{ else if eq .Status "in_progress" }}In Progress
+                                {{ else if eq .Status "completed" }}Completed
+                                {{ end }}
+                            </span>
+
+                            <!-- Priority -->
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full
+                                {{ if eq .Priority "low" }}bg-gray-100 text-gray-700
+                                {{ else if eq .Priority "medium" }}bg-yellow-100 text-yellow-700
+                                {{ else if eq .Priority "high" }}bg-red-100 text-red-700
+                                {{ end }}">
+                                {{ if eq .Priority "low" }}Low
+                                {{ else if eq .Priority "medium" }}Medium
+                                {{ else if eq .Priority "high" }}High
+                                {{ end }} Priority
+                            </span>
+
+                        </div>
+                    </div>
+
+                </div>
+                {{ end }}
+
+                {{ if not .tasks }}
+                <div class="text-center py-16">
+                    <p class="text-gray-500">No tasks available</p>
+                </div>
+                {{ end }}
+
+            </div>
+        </div>
+
+        <!-- Projects -->
+        <div id="projectsContent" class="tab-content hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {{ range .projects }}
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition group">
+
+                <!-- Header -->
+                <div class="p-5 border-b border-gray-100 flex items-start justify-between gap-3">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition">
+                            {{ .Name }}
+                        </h4>
+                        {{ if .Description }}
+                        <p class="mt-1 text-sm text-gray-500 line-clamp-2">
+                            {{ .Description }}
+                        </p>
+                        {{ end }}
+                    </div>
+
+                    <!-- Status Badge -->
+                    <span class="shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+                        {{ if eq .Status "active" }}bg-blue-100 text-blue-700
+                        {{ else if eq .Status "planned" }}bg-gray-100 text-gray-700
+                        {{ else if eq .Status "completed" }}bg-green-100 text-green-700
+                        {{ end }}">
+                        {{ if eq .Status "active" }}Active
+                        {{ else if eq .Status "planned" }}Planned
+                        {{ else if eq .Status "completed" }}Completed
+                        {{ end }}
+                    </span>
+                </div>
+
+                <!-- Body -->
+                <div class="p-5 space-y-3 text-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-500">Team</span>
+                        <span class="font-medium text-gray-900">{{ .TeamName }}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-500">Created By</span>
+                        <span class="font-medium text-gray-900">{{ .CreatedBy }}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-500">Tasks</span>
+                        <span class="font-medium text-gray-900">{{ .TaskProgress }}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-500">Timeline</span>
+                        <span class="font-medium text-gray-900">{{ .Timeline }}</span>
+                    </div>
+                </div>
+
+            </div>
+            {{ end }}
+
+            {{ if not .projects }}
+            <div class="col-span-full text-center py-16">
+                <p class="text-gray-500">No projects found</p>
+            </div>
+            {{ end }}
+        </div>
+
+        <!-- Teams -->
+        <div id="teamsContent" class="tab-content hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {{ range .teams }}
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition group">
+                <!-- Card Header -->
+                <div class="p-5 border-b border-gray-100">
+                    <h4 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition">
+                        {{ .Name }}
+                    </h4>
+                    {{ if .Description }}
+                    <p class="mt-1 text-sm text-gray-500 line-clamp-2">
+                        {{ .Description }}
+                    </p>
+                    {{ end }}
+                </div>
+
+                <!-- Card Body -->
+                <div class="p-5 space-y-3 text-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-500">Projects</span>
+                        <span class="font-semibold text-gray-900">
+                            {{ .ProjectCount }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-500">Total Tasks</span>
+                        <span class="font-semibold text-gray-900">
+                            {{ .TotalTasks }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-500">Active Projects</span>
+                        <span class="font-semibold text-gray-900">
+                            {{ .ActiveProjects }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {{ end }}
+        </div>
+    </div>
 </section>
+
+<script>
+    // Tabs switching
+    const tabs = ['tasks','projects','teams'];
+    tabs.forEach(tab => {
+        document.getElementById(`${tab}Tab`).addEventListener('click', function() {
+            tabs.forEach(t => {
+                document.getElementById(`${t}Content`).classList.add('hidden');
+                document.getElementById(`${t}Tab`).classList.remove('bg-white','text-gray-900','shadow');
+                document.getElementById(`${t}Tab`).classList.add('text-gray-700');
+            });
+            document.getElementById(`${tab}Content`).classList.remove('hidden');
+            this.classList.add('bg-white','text-gray-900','shadow');
+            this.classList.remove('text-gray-700');
+        });
+    });
+</script>
 
 {{ template "footer" . }}
 {{ end }}

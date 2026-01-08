@@ -13,7 +13,7 @@ type RoleController struct {
 	Repo *repositories.RoleRepository
 }
 
-func NewRoleRepository(repo *repositories.RoleRepository) *RoleController {
+func NewRoleController(repo *repositories.RoleRepository) *RoleController {
 	return &RoleController{Repo: repo}
 }
 

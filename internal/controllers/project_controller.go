@@ -13,15 +13,25 @@ import (
 )
 
 type ProjectController struct {
-	Repo *repositories.ProjectRepository
+	Repo     *repositories.ProjectRepository
+	TeamRepo *repositories.TeamRepository
+	UserRepo *repositories.UserRepository
 }
 
-func NewProjectController(repo *repositories.ProjectRepository) *ProjectController {
-	return &ProjectController{Repo: repo}
+func NewProjectController(
+	projectRepo *repositories.ProjectRepository,
+	teamRepo *repositories.TeamRepository,
+	userRepo *repositories.UserRepository,
+) *ProjectController {
+	return &ProjectController{
+		Repo:     projectRepo,
+		TeamRepo: teamRepo,
+		UserRepo: userRepo,
+	}
 }
 
 // READ ALL DATA
-func (uc *ProjectController) ListProjects(c *gin.Context) {
+func (pc *ProjectController) ListProjects(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if page < 1 {
 		page = 1
@@ -29,7 +39,13 @@ func (uc *ProjectController) ListProjects(c *gin.Context) {
 
 	pageSize := 10
 
-	proj, total, err := uc.Repo.FindPaginated(page, pageSize)
+	proj, total, err := pc.Repo.FindPaginated(page, pageSize)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	teams, err := pc.TeamRepo.FindAll()
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -63,6 +79,7 @@ func (uc *ProjectController) ListProjects(c *gin.Context) {
 	c.HTML(http.StatusOK, "projects/list.html", gin.H{
 		"title":    "Projects",
 		"projects": proj,
+		"teams":    teams,
 
 		// pagination
 		"currentPage": page,
@@ -149,4 +166,47 @@ func (pc *ProjectController) Delete(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	pc.Repo.Delete(id)
 	c.Redirect(http.StatusFound, "/projects")
+}
+
+func (pc *ProjectController) GetUsersForProject(c *gin.Context) {
+	projectID, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+
+	users, err := pc.UserRepo.GetUsersByProject(projectID) // implement this in UserRepo
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, users)
+}
+
+func (pc *ProjectController) GetProjectUsers(c *gin.Context) {
+	projectID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	// Find the project with its team
+	project, err := pc.Repo.FindByID(projectID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found"})
+		return
+	}
+
+	// If project has no team, return empty array
+	if project.TeamID == nil {
+		c.JSON(http.StatusOK, []interface{}{})
+		return
+	}
+
+	// Get team members
+	team, err := pc.TeamRepo.FindByIDWithMembers(*project.TeamID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch team members"})
+		return
+	}
+
+	// Return the users
+	c.JSON(http.StatusOK, team.Members)
 }

@@ -2,150 +2,217 @@
 {{ template "header" . }}
 
 <div class="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
 	<!-- Page Header -->
 	<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 		<div>
-			<h1 class="text-2xl font-semibold text-gray-900">Teams</h1>
-			<p class="mt-1 text-sm text-gray-600">Manage your teams</p>
+			<h1 class="text-2xl font-semibold text-gray-900">Team Management</h1>
+			<p class="mt-1 text-sm text-gray-600">Warehouse Management System</p>
 		</div>
-
 		<button id="open-team-modal"
 			class="inline-flex items-center justify-center bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-lg transition-colors text-sm font-medium">
 			<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-					d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
 			</svg>
 			Add Team
 		</button>
 	</div>
 
-	<!-- Teams Table Card -->
-	<div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+	<!-- Teams Card -->
+	<div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col lg:flex-row gap-6">
 
-		<!-- Filter Header -->
-		<div class="p-4 border-b border-gray-200">
-			<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+		<!-- Teams List -->
+		<div class="lg:w-80 flex-shrink-0 border-r border-gray-200">
+			<div class="p-4 border-b border-gray-200">
 				<h2 class="text-sm font-medium text-gray-900">All Teams</h2>
+				<p class="text-xs text-gray-500 mt-1">{{ len .teams }} teams</p>
+			</div>
 
-				<div class="relative">
-					<input type="text" id="search-input"
-						placeholder="Search teams..."
-						class="w-full sm:w-56 pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg
-							   focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none">
-					<svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"
-						fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-							d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-					</svg>
+			<div class="overflow-y-auto max-h-[60vh]">
+				{{ range $index, $team := .teams }}
+				<div class="team-card p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors {{ if eq $index 0 }}bg-gray-50 border-l-4 border-l-gray-900{{ end }}"
+					data-id="{{ $team.ID }}"
+					data-name="{{ $team.Name }}"
+					data-description="{{ $team.Description }}"
+					data-member-count="{{ len $team.Members }}">
+					<div class="flex items-center justify-between mb-1">
+						<h3 class="text-sm font-medium text-gray-900">{{ $team.Name }}</h3>
+						<span class="text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full">
+							{{ len $team.Members }}
+						</span>
+					</div>
+					<p class="text-xs text-gray-500 mb-2 truncate">{{ $team.Description }}</p>
+					<div class="text-xs text-gray-700">
+						Leader: 
+						{{ $hasLeader := false }}
+						{{ range $team.Members }}
+							{{ if eq .Role "leader" }}
+								{{ $hasLeader = true }}
+								{{ .User.FirstName }} {{ .User.LastName }}
+							{{ end }}
+						{{ end }}
+						{{ if not $hasLeader }}
+							<span class="text-gray-400">No leader assigned</span>
+						{{ end }}
+					</div>
+					<div class="flex gap-2 mt-3">
+						<button class="edit-team-btn flex-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded transition-colors"
+							data-id="{{ $team.ID }}"
+							data-name="{{ $team.Name }}"
+							data-description="{{ $team.Description }}">
+							Edit
+						</button>
+						<button class="delete-team-btn text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded transition-colors"
+							data-id="{{ $team.ID }}"
+							data-name="{{ $team.Name }}">
+							Delete
+						</button>
+					</div>
 				</div>
+				{{ else }}
+				<div class="p-6 text-center text-xs text-gray-500">No teams found</div>
+				{{ end }}
 			</div>
 		</div>
 
-		<!-- Table -->
-		<div class="overflow-x-auto">
-			<table class="w-full">
-				<thead class="bg-gray-50 border-b border-gray-200">
-					<tr>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Team</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
-						<th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-					</tr>
-				</thead>
+		<!-- Team Members Panel -->
+		<div class="flex-1 p-4">
+			<div class="flex items-center justify-between mb-4">
+				<div>
+					<h2 class="text-sm font-medium text-gray-900">Team Members</h2>
+					<p class="text-xs text-gray-500 mt-1" id="member-count">
+						{{ if .teams }}{{ len (index .teams 0).Members }} members{{ else }}Select a team{{ end }}
+					</p>
+				</div>
+				<button id="add-member-btn" class="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" {{ if not .teams }}disabled{{ end }}>
+					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+					</svg>
+					Add Member
+				</button>
+			</div>
 
-				<tbody class="bg-white divide-y divide-gray-100">
-					{{ range .teams }}
-					<tr class="hover:bg-gray-50 transition-colors"
-						data-id="{{ .ID }}"
-						data-name="{{ .Name }}"
-						data-description="{{ .Description }}">
-
-						<td class="px-6 py-4 text-sm font-medium text-gray-900">
-							{{ .Name }}
-						</td>
-
-						<td class="px-6 py-4 text-sm text-gray-600 truncate max-w-md">
-							{{ .Description }}
-						</td>
-
-						<td class="px-6 py-4 text-sm text-gray-600">
-							{{ .CreatedAt.Format "Jan 02, 2006" }}
-						</td>
-
-						<td class="px-6 py-4 text-right text-sm">
-							<button class="edit-team-btn text-gray-700 hover:text-gray-900 mr-3 font-medium">
-								Edit
+			<div class="overflow-y-auto max-h-[50vh] space-y-3" id="members-list">
+				{{ if .teams }}
+					{{ $firstTeam := index .teams 0 }}
+					{{ range $firstTeam.Members }}
+					<div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
+						<div class="flex items-center gap-3">
+							<div class="w-10 h-10 bg-gray-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+								{{ slice .User.FirstName 0 1 }}{{ slice .User.LastName 0 1 }}
+							</div>
+							<div>
+								<div class="text-sm font-medium text-gray-900 flex items-center gap-1">
+									{{ .User.FirstName }} {{ .User.LastName }}
+									{{ if eq .Role "leader" }}
+									<svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+										<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+									</svg>
+									{{ end }}
+								</div>
+								<span class="text-xs text-gray-500">{{ .User.Email }}</span>
+							</div>
+						</div>
+						<div class="flex items-center gap-3">
+							<span class="px-2 py-0.5 text-xs rounded-md {{ if eq .Role "leader" }}bg-yellow-50 text-yellow-700{{ else }}bg-gray-100 text-gray-700{{ end }}">
+								{{ if eq .Role "leader" }}Leader{{ else }}Member{{ end }}
+							</span>
+							<button class="remove-member-btn text-red-600 hover:text-red-700 p-1" 
+								data-member-id="{{ .ID }}"
+								data-member-name="{{ .User.FirstName }} {{ .User.LastName }}"
+								data-team-id="{{ $firstTeam.ID }}">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+								</svg>
 							</button>
-							<button class="delete-team-btn text-red-600 hover:text-red-700 font-medium"
-								data-id="{{ .ID }}"
-								data-name="{{ .Name }}">
-								Delete
-							</button>
-						</td>
-					</tr>
+						</div>
+					</div>
 					{{ else }}
-					<tr>
-						<td colspan="4" class="text-center py-12 text-sm text-gray-500">
-							No teams found
-						</td>
-					</tr>
+					<div class="text-center py-12 text-xs text-gray-500">No members in this team</div>
 					{{ end }}
-				</tbody>
-			</table>
+				{{ else }}
+				<div class="flex items-center justify-center h-48 text-xs text-gray-500">Create a team to get started</div>
+				{{ end }}
+			</div>
 		</div>
+
 	</div>
 </div>
 
 <!-- Team Modal -->
-<div id="team-modal"
-	class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden p-4">
+<div id="team-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden p-4">
 	<div class="bg-white rounded-lg shadow-xl w-full max-w-xl">
-
 		<div class="bg-gray-900 px-6 py-4">
-			<h2 id="team-modal-title" class="text-lg font-semibold text-white">
-				Create Team
-			</h2>
+			<h2 id="team-modal-title" class="text-lg font-semibold text-white">Create Team</h2>
 		</div>
 
 		<form id="team-form" action="/teams" method="POST" class="px-6 py-6 space-y-4">
 			<input type="hidden" name="id" id="team-id">
 
-			<input name="name" id="team-name" placeholder="Team name"
-				class="w-full px-3 py-2 border rounded-lg" required>
+			<div>
+				<label class="block text-sm font-medium text-gray-700 mb-2">Team Name <span class="text-red-500">*</span></label>
+				<input name="name" id="team-name" placeholder="Enter team name"
+					class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent" required>
+			</div>
 
-			<textarea name="description" id="team-description" rows="3"
-				placeholder="Team description"
-				class="w-full px-3 py-2 border rounded-lg"></textarea>
+			<div>
+				<label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+				<textarea name="description" id="team-description" rows="3"
+					placeholder="Enter team description"
+					class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"></textarea>
+			</div>
 		</form>
 
 		<div class="flex justify-end gap-2 px-6 py-4 border-t bg-gray-50">
-			<button id="close-team-modal" class="px-4 py-2 border rounded-lg">
-				Cancel
-			</button>
-			<button type="submit" form="team-form"
-				class="px-4 py-2 bg-gray-900 text-white rounded-lg">
-				Save Team
-			</button>
+			<button id="close-team-modal" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+			<button type="submit" form="team-form" class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">Save Team</button>
 		</div>
 	</div>
 </div>
 
-<!-- Delete Modal -->
-<div id="delete-team-modal"
-	class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-	<div class="bg-white rounded-lg p-6 max-w-md w-full">
-		<p class="text-center mb-4">
-			Delete <span id="delete-team-name" class="font-semibold"></span>?
-		</p>
-		<div class="flex gap-2">
-			<button id="cancel-team-delete" class="flex-1 border px-4 py-2 rounded-lg">
-				Cancel
-			</button>
-			<button id="confirm-team-delete"
-				class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg">
-				Delete
-			</button>
+<!-- Add Member Modal -->
+<div id="member-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden p-4">
+	<div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+		<div class="bg-gray-900 px-6 py-4">
+			<h2 id="member-modal-title" class="text-lg font-semibold text-white">Add Member</h2>
+		</div>
+
+		<form id="member-form" action="/teams/add-member" method="POST" class="px-6 py-6 space-y-4">
+			<input type="hidden" name="team_id" id="member-team-id">
+
+			<div>
+				<label class="block text-sm font-medium text-gray-700 mb-2">Select User <span class="text-red-500">*</span></label>
+				<select name="user_id" id="member-user-id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent" required>
+					<option value="">Select a user</option>
+					{{ range .users }}
+						<option value="{{ .ID }}">{{ .FirstName }} {{ .LastName }} ({{ .Email }})</option>
+					{{ end }}
+				</select>
+			</div>
+
+			<div>
+				<label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+				<select name="role" id="member-role" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent">
+					<option value="member">Member</option>
+					<option value="leader">Leader</option>
+				</select>
+			</div>
+		</form>
+
+		<div class="flex justify-end gap-2 px-6 py-4 border-t bg-gray-50">
+			<button id="close-member-modal" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+			<button type="submit" form="member-form" class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">Add Member</button>
+		</div>
+	</div>
+</div>
+
+<!-- Delete Team Modal -->
+<div id="delete-team-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden p-4">
+	<div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+		<h3 class="text-lg font-semibold text-gray-900 mb-2">Delete Team</h3>
+		<p class="text-sm text-gray-600 mb-6">Are you sure you want to delete <span id="delete-team-name" class="font-semibold text-gray-900"></span>? This action cannot be undone.</p>
+		<div class="flex gap-3 justify-end">
+			<button id="cancel-team-delete" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors">Cancel</button>
+			<button id="confirm-team-delete" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium transition-colors">Delete Team</button>
 		</div>
 	</div>
 </div>

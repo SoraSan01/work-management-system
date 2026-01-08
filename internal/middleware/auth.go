@@ -1,31 +1,56 @@
-// internal/middleware/auth.go
 package middleware
 
 import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
-// Logger middleware example
-func Logger() gin.HandlerFunc {
+// AuthRequired checks if a user is logged in
+func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Printf("Request: %s %s\n", c.Request.Method, c.Request.URL.Path)
+		session := sessions.Default(c)
+		userID := session.Get("user_id")
+
+		if userID == nil {
+			// Not logged in
+			c.Redirect(http.StatusSeeOther, "/login")
+			c.Abort()
+			return
+		}
+
+		// User is logged in, continue
 		c.Next()
 	}
 }
 
-// AuthRequired is a simple auth middleware example
-func AuthRequired() gin.HandlerFunc {
+// Logger logs the request method and path
+func Logger() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Simple example: check query param ?token=123
-		token := c.Query("token")
-		if token != "123" {
-			c.String(http.StatusUnauthorized, "Unauthorized: missing or wrong token")
+		fmt.Printf("%s %s\n", c.Request.Method, c.Request.URL.Path)
+		c.Next()
+	}
+}
+
+// AuthAdminOrManager ensures the logged-in user is admin or manager
+func AuthAdminOrManager() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		session := sessions.Default(c)
+		role, ok := session.Get("role").(string)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}
+
+		if role != "admin" && role != "manager" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: admin or manager only"})
+			c.Abort()
+			return
+		}
+
 		c.Next()
 	}
 }

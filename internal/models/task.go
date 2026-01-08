@@ -7,16 +7,18 @@ type Task struct {
 	Title       string
 	Description string
 
-	Status   string // todo, in_progress, done
-	Priority string // low, medium, high
+	Status   string
+	Priority string
 
 	ProjectID *uint64
-	Project   *Project `gorm:"foreignKey:ProjectID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Project   *Project
 
 	AssignedTo *uint64
-	User       *User `gorm:"foreignKey:AssignedTo;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	User       *User `gorm:"foreignKey:AssignedTo;references:ID"`
 
 	DueDate   time.Time
 	CreatedAt time.Time
 	UpdatedAt time.Time
+
+	Documents []Document `gorm:"foreignKey:TaskID"`
 }
